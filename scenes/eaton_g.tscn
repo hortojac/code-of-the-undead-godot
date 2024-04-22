@@ -1,4 +1,4 @@
-[gd_scene load_steps=419 format=3 uid="uid://bpndalxdtxrv7"]
+[gd_scene load_steps=420 format=3 uid="uid://bpndalxdtxrv7"]
 
 [ext_resource type="Texture2D" uid="uid://joeh6swp8ks3" path="res://assets/eaton_g_outline.png" id="1_plgjy"]
 [ext_resource type="Texture2D" uid="uid://bjisuk3kkx253" path="res://assets/map-assets/Room_Builder_Floors_32x32.png" id="2_15i8c"]
@@ -25,6 +25,7 @@
 [ext_resource type="Texture2D" uid="uid://c5wake5573lo7" path="res://assets/zombie/zombie_walk.png" id="16_iluws"]
 [ext_resource type="PackedScene" uid="uid://c8xtm4apeuo3e" path="res://scenes/bullet.tscn" id="17_642bl"]
 [ext_resource type="PackedScene" uid="uid://bspwmmi7xc8cy" path="res://scenes/npc.tscn" id="18_rf5qo"]
+[ext_resource type="AudioStream" uid="uid://b5v71p4ymhi10" path="res://assets/sounds/shotgun_shot.mp3" id="19_lpoq0"]
 [ext_resource type="PackedScene" uid="uid://b8tdo1asku2m1" path="res://scenes/HUD.tscn" id="22_en4lp"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qj60j"]
@@ -5544,11 +5545,14 @@ zoom = Vector2(2, 2)
 [node name="ShootingSystem" type="Marker2D" parent="Character"]
 script = ExtResource("6_8q2rr")
 
-[node name="Gunshot" type="AudioStreamPlayer2D" parent="Character/ShootingSystem"]
+[node name="PistolShot" type="AudioStreamPlayer2D" parent="Character/ShootingSystem"]
 stream = ExtResource("14_5g5h6")
 
 [node name="Reload" type="AudioStreamPlayer" parent="Character/ShootingSystem"]
 stream = ExtResource("15_2ybif")
+
+[node name="ShotgunShot" type="AudioStreamPlayer2D" parent="Character/ShootingSystem"]
+stream = ExtResource("19_lpoq0")
 
 [node name="player_hitbox" type="Area2D" parent="Character"]
 
@@ -5788,7 +5792,10 @@ polygon = PackedVector2Array(692, 676, 693, 563, 689, 563)
 polygon = PackedVector2Array(691, 355, 690, 355, 690, 499, 692, 498, 692, 355)
 
 [node name="Hud" parent="." instance=ExtResource("22_en4lp")]
+visible = false
 
+[connection signal="gun_reload" from="Character/ShootingSystem" to="Hud" method="_on_shooting_system_gun_reload"]
+[connection signal="shot" from="Character/ShootingSystem" to="Hud" method="_on_shooting_system_shot"]
 [connection signal="body_entered" from="Character/player_hitbox" to="Character" method="_on_player_hitbox_body_entered"]
 [connection signal="body_exited" from="Character/player_hitbox" to="Character" method="_on_player_hitbox_body_exited"]
 [connection signal="timeout" from="Character/attack_cooldown" to="Character" method="_on_attack_cooldown_timeout"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=292 format=3 uid="uid://ctly4heguffmq"]
+[gd_scene load_steps=293 format=3 uid="uid://ctly4heguffmq"]
 
 [ext_resource type="Texture2D" uid="uid://co2kal1wj5epn" path="res://assets/eaton_1-1.png.png" id="1_c1edr"]
 [ext_resource type="Texture2D" uid="uid://bjisuk3kkx253" path="res://assets/map-assets/Room_Builder_Floors_32x32.png" id="2_2n0rq"]
@@ -21,6 +21,7 @@
 [ext_resource type="AudioStream" uid="uid://ci7c5wgdmgbfq" path="res://assets/sounds/pistol_shot.mp3" id="16_4ohlj"]
 [ext_resource type="PackedScene" uid="uid://b8tdo1asku2m1" path="res://scenes/HUD.tscn" id="17_6eru8"]
 [ext_resource type="AudioStream" uid="uid://c1avf5cqedcec" path="res://assets/sounds/reload.wav" id="17_q63ww"]
+[ext_resource type="AudioStream" uid="uid://b5v71p4ymhi10" path="res://assets/sounds/shotgun_shot.mp3" id="21_t8hiq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tptof"]
 texture = ExtResource("2_2n0rq")
@@ -6190,11 +6191,14 @@ zoom = Vector2(2, 2)
 [node name="ShootingSystem" type="Marker2D" parent="Character"]
 script = ExtResource("11_ok7bb")
 
-[node name="Gunshot" type="AudioStreamPlayer" parent="Character/ShootingSystem"]
-stream = ExtResource("16_4ohlj")
-
 [node name="Reload" type="AudioStreamPlayer" parent="Character/ShootingSystem"]
 stream = ExtResource("17_q63ww")
+
+[node name="PistolShot" type="AudioStreamPlayer2D" parent="Character/ShootingSystem"]
+stream = ExtResource("16_4ohlj")
+
+[node name="ShotgunShot" type="AudioStreamPlayer2D" parent="Character/ShootingSystem"]
+stream = ExtResource("21_t8hiq")
 
 [node name="player_hitbox" type="Area2D" parent="Character"]
 

@@ -8,11 +8,17 @@
 
 extends Label
 
-var magazine_size = 10
-var ammo_count = magazine_size
+var pistol_size = 10
+var pistol_ammo = 10
+var shotgun_size = 6
+var shotgun_ammo = shotgun_size
+var ammo_count = pistol_size
+
 var reload_status = false
 var reload_time = .75
+var weapon = 'pistol'
 
+signal swap_weapon()
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	text = str(ammo_count)
@@ -29,10 +35,16 @@ func _input(event):
 
 	if Input.is_action_just_pressed("Reload"):
 		reload()
+	if Input.is_action_just_pressed('Swap_Weapon'):
+		swap()
+	
 		
 		
 func done_reload():
-	ammo_count = 10
+	if weapon == 'pistol':
+		ammo_count = pistol_size
+	if weapon == 'shotgun':
+		ammo_count = shotgun_size
 	text = str(ammo_count)
 	reload_status = false
 
@@ -51,3 +63,15 @@ func reload():
 	reload_status = true
 	get_tree().create_timer(reload_time, false).timeout.connect(func(): done_reload())
 	
+func swap():
+	if weapon == 'pistol':
+		pistol_ammo = ammo_count
+		ammo_count = shotgun_ammo
+		weapon = 'shotgun'
+	if weapon == 'shotgun':
+		shotgun_ammo = ammo_count
+		ammo_count = pistol_ammo
+		weapon = 'pistol'
+	print(weapon)
+	print(ammo_count)
+	text = str(ammo_count)

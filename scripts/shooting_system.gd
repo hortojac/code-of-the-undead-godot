@@ -11,18 +11,22 @@ extends Marker2D
 
 class_name ShootingSystem
 
-signal shot(ammo_in_magazine: int)
-signal gun_reload(ammo_in_magazine: int, ammo_left: int)
+signal shot(pistol_ammo: int)
+signal gun_reload(pistol_ammo: int, ammo_left: int)
 var reload_time = 1
 var reload_status = false
 var equipped = false
+var weapon = 'pistol'
 
-@export var magazine_size = 10
-@export var ammo_in_magazine = 0
-	
+@export var pistol_size = 10
+@export var pistol_ammo = 10
+
+var shotgun_size = 6
+var shotgun_ammo = 6
+
 @onready var bullet_scene = preload("res://scenes/bullet.tscn")
 func _ready():
-	ammo_in_magazine = magazine_size
+	pistol_ammo = pistol_size
 	
 func _input(event):
 	if Input.is_action_just_pressed("Shoot"):
@@ -31,7 +35,12 @@ func _input(event):
 		reload()
 	if Input.is_action_just_pressed("Shoot_Toggle"):
 		equipped = not equipped
-		
+	if Input.is_action_just_pressed("Swap_Weapon"):
+		if equipped:
+			if weapon == 'pistol':
+				weapon = 'shotgun'
+			else:
+				weapon = 'pistol'
 func reload():
 	if equipped:
 		if reload_status == true:
@@ -39,27 +48,52 @@ func reload():
 		$Reload.play()
 		print('reloading')
 		reload_status = true
-		ammo_in_magazine = magazine_size
+		if weapon == 'pistol':
+			pistol_ammo = pistol_size
+		if weapon == 'shotgun':
+			shotgun_ammo = shotgun_size
 		get_tree().create_timer(reload_time, false).timeout.connect(func(): reload_status = false)
 	
 func shoot():
 	if equipped:
-		if ammo_in_magazine <= 0 or reload_status == true:
+		if pistol_ammo <= 0 or reload_status == true:
 			reload()
 			return
 		else:
-			$Gunshot.play()
-			var bullet = bullet_scene.instantiate() as Bullet
-			get_tree().root.add_child(bullet)
-			var move_direction = (get_global_mouse_position() - global_position).normalized()
-			bullet.move_direction = move_direction
-			bullet.global_position = global_position
-			bullet.rotation = move_direction.angle()
+			if weapon == 'pistol':
+				$PistolShot.play()
+				var bullet = bullet_scene.instantiate() as Bullet
+				get_tree().root.add_child(bullet)
+				var move_direction = (get_global_mouse_position() - global_position).normalized()
+				bullet.move_direction = move_direction
+				bullet.global_position = global_position
+				bullet.rotation = move_direction.angle()
+				pistol_ammo -= 1
+				emit_signal('shot')
+				if pistol_ammo == 0:
+					reload()
+			if weapon == 'shotgun':
+				$ShotgunShot.play()
+				var spread_angle = 10 # Angle in degrees for the spread between bullets
+				var bullet_count = 3 # Total number of bullets to shoot
 
-			ammo_in_magazine -= 1
-			emit_signal('shot')
-			print(ammo_in_magazine)
-			if ammo_in_magazine == 0:
-				reload()
+				for i in range(bullet_count):
+					var bullet = bullet_scene.instantiate() as Bullet
+					get_tree().root.add_child(bullet)
+					
+					# Calculate the angle offset for each bullet
+					var angle_offset = deg_to_rad(spread_angle * (i - (bullet_count - 1) / 2))
+					
+					# Calculate the move direction with the angle offset
+					var move_direction = (get_global_mouse_position() - global_position).normalized().rotated(angle_offset)
+					
+					bullet.move_direction = move_direction
+					bullet.global_position = global_position
+					bullet.rotation = move_direction.angle()
+
+				shotgun_ammo -= 1
+				emit_signal('shot')
+				if shotgun_ammo == 0:
+					reload()
 	
 # https://www.youtube.com/watch?v=nqaSLUdEPL0
